@@ -1,0 +1,108 @@
+{
+  "3": {
+    "number":"1",
+    "name": "面试人员",
+    "menus": [{
+      "name": "面试管理",
+      "level": "40000",
+      "class": "fa-file-text-o",
+      "submenus": [
+        { "name": "我的简历", "level": 40001, "uisref": "auditionresult" },
+        { "name": "简历状态", "level": 40002, "uisref": "auditionresult" }
+      ]
+    }]
+  },
+  "2": {
+    "number":"4",
+    "name": "正式员工",
+    "menus": [{
+      "name": "任务管理",
+      "level": "30000",
+      "class": "fa-tasks",
+      "submenus": [
+        { "name": "我的任务", "level": 30002, "uisref": "mytasks" }
+      ]
+    }, {
+      "name": "成员管理",
+      "level": "20000",
+      "class": "fa-users",
+      "submenus": [
+        { "name": "成员列表", "level": 20001, "uisref": "userslist" }
+      ]
+    }, {
+      "name": "面试管理",
+      "level": "40000",
+      "class": "fa-file-text-o",
+      "submenus": [
+        { "name": "面试评定", "level": 40002, "uisref": "auditionassess" },
+        { "name": "面试人员", "level": 40003, "uisref": "auditionstaff" }
+      ]
+    }]
+  },
+  "1": {
+    "number":"1",
+    "name": "组长",
+    "menus": [{
+      "name": "任务管理",
+      "level": "10000",
+      "class": "fa-tasks",
+      "submenus": [
+        { "name": "我的任务", "level": 10002, "uisref": "mytasks" },
+        { "name": "任务列表", "level": 10005, "uisref": "taskslist" },
+        { "name": "创建任务", "level": 10005, "uisref": "taskslist" }
+      ]
+    }, {
+      "name": "项目管理",
+      "level": "20000",
+      "class": "fa-users",
+      "submenus": [
+        { "name": "项目列表", "level": 20001, "uisref": "userslist" },
+        { "name": "创建项目", "level": 20002, "uisref": "userslist" }
+      ]
+    }, {
+      "name": "成员管理",
+      "level": "30000",
+      "class": "fa-users",
+      "submenus": [
+        { "name": "成员列表", "level": 30001, "uisref": "userslist" }
+      ]
+    }, {
+      "name": "面试管理",
+      "level": "40000",
+      "class": "fa-file-text-o",
+      "submenus": [
+        { "name": "面试审核", "level": 40001, "uisref": "auditionassess" },
+      ]
+    }]
+  },
+  "0": {
+    "number":"0",
+    "name": "管理员",
+    "menus": [{
+      "name": "项目管理",
+      "level": "10000",
+      "class": "fa-tasks",
+      "submenus": [
+        { "name": "项目列表", "level": 10001, "uisref": "projectmanage" },
+        { "name": "创建项目", "level": 10002, "uisref": "projectcreate" }
+      ]
+    }, {
+      "name": "小组管理",
+      "level": "20000",
+      "class": "fa-list",
+      "submenus": [
+        { "name": "小组列表", "level": 20001, "uisref": "grouplist" },
+        { "name": "新增小组", "level": 20002, "uisref": "groupcreate" }
+      ]
+    }, {
+      "name": "人员管理",
+      "level": "30000",
+      "class": "fa-users",
+      "submenus": [
+        { "name": "成员列表", "level": 30001, "uisref": "userslist" },
+        { "name": "新增成员", "level": 30002, "uisref": "usercreate" },
+        { "name": "简历审核", "level": 30003, "uisref": "resumecheck" }
+      ]
+    }]
+  }
+}

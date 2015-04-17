@@ -1,0 +1,52 @@
+div(class="container-fluid usercreate")
+  div.row
+    div.col-md-12
+      ol.breadcrumb
+        li
+          i(class="fa fa-home")
+        li
+          a 人员管理
+        li.active 新增成员
+  div.row
+    div(class="form col-md-8 col-md-offset-1")
+      form(class="form-horizontal")
+        div.form-group
+          label(class="col-md-4 control-label" for="account") 登录账号：
+          div.col-md-4
+            input(class="account form-control input-sm" type="text" id="account" placeholder="登录账号" ng-model="useraccount")
+          div(class="tip col-md-4")
+            span 有别于用户名，由数字和字母构成
+        div.form-group
+          label(class="col-md-4 control-label" for="password") 登录密码：
+          div.col-md-4
+            input(class="password form-control input-sm" type="password" id="password" placeholder="密码" value="123" ng-model="userpassword")
+          div(class="tip col-md-3")
+            span 默认密码为'123'
+        div.form-group
+          label(class="col-md-4 control-label" for="jointime") 加入团队时间：
+          div.col-md-4
+            input(class="jointime form-control input-sm" type="text" id="jointime" placeholder="格式：2014-12-12" ng-model="userjointime")
+          div(class="tip col-md-3")
+            span 默认当前时间
+        div.form-group
+          label(class="col-md-4 control-label") 担任角色：
+          div.col-md-8
+            div(class="checkboxs clearfix")
+              div(ng-repeat="role in roles")
+                input(type="checkbox" value="{{role}}" ng-checked="selectedRoles.indexOf(role) > -1" ng-click="toggleselectedRoles(role)")
+                span {{role | role}}
+        div.form-group
+          label(class="col-md-4 control-label") 所在开发小组：
+          div.col-md-8
+            div(class="checkboxs clearfix")
+              div(ng-repeat="group in groups")
+                input(type="checkbox" value="{{group.number}}" ng-checked="selectedGroups.indexOf(group.number) > -1" ng-click="toggleselectedGroups(group.number)")
+                span {{group.name}}
+        div.form-group
+          div(class="col-sm-offset-4 col-md-8")
+            buttom(class="user-add btn btn-sm btn-warning" add-user)
+              确认添加
+              i(class="fa fa-plus")
+        div.form-group
+          div(class="col-sm-offset-4 col-md-8")
+            span(class="msg") {{addUserMsg}}
