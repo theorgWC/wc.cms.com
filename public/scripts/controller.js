@@ -6,18 +6,34 @@ angular.module('cms.controllers', [])
     '$cookies',
     '$scope',
     'Users',
-  function($cookies, $scope, Users) {
+    'Broadcasts',
+    'Feedbacks',
+  function($cookies, $scope, Users, Broadcasts, Feedbacks) {
     var userid = $cookies['_id'];
 
     Users.one({ user_id: userid }).$promise.then(function(data) {
       $scope.user = data.data.user;
       $scope.menus = data.data.menus;
+      $scope.alerts = data.data.user.feedbacks;
+
+      Broadcasts.all().$promise.then(function(data) {
+        $scope.broadcasts = _.slice(data.broadcasts, 0, 6);
+      });
     });
 
-    $scope.alerts = [];
+    $scope.showMenu = function(){
+      $('.page-sidebar').toggleClass('open');
+    }
 
-    $scope.closeAlert = function(index) {
+    $scope.closeAlert = function(index,id) {
       $scope.alerts.splice(index, 1);
+      // feedback、user删除
+      var user = {
+        user_id: userid
+      };
+      user.feedbacks = _.pluck($scope.alerts, '_id');
+      Users.update(user);
+      Feedbacks.delete({feedback_id: id});
     };
   }])
 
@@ -75,7 +91,7 @@ angular.module('cms.controllers', [])
     };
 
     // 事件定义
-    $scope.$on('addGroup', function() {
+    $scope.$on('2dertgaddGroup', function() {
       var newGroup = {
         name        : $scope.groupname,
         leader      : $scope.groupleader,
@@ -126,6 +142,91 @@ angular.module('cms.controllers', [])
           $scope.groups = data.data.groups || [];
         });
       });
+    });
+  }])
+
+// 
+// == 小组信息
+  .controller('groupdetailCtrl', ['$scope', 'Groups', 'Roles', '$stateParams', function($scope, Groups, Roles, $stateParams) {
+    $scope.isEdit = false;
+    $scope.oper = '编辑';
+    $scope.selectedStaff = null;
+
+    Groups.one({ group_id: $stateParams.id }).$promise.then(function(data){
+      $scope.info = data.group;
+    });
+
+    Roles.one({role_num: '01'}).$promise.then(function(data){
+      $scope.allLeaders = data.users;   
+    });
+
+    $scope.$on('showModal', function() {
+      Roles.one({role_num: '10'}).$promise.then(function(data){
+        $scope.allStaffs = data.users; 
+      });
+      $scope.$saferApply();
+    });
+
+    $scope.$on('revokeEdit', function() {
+      $scope.isEdit = false;
+      Groups.one({ group_id: $stateParams.id }).$promise.then(function(data){
+        $scope.info = data.group;
+        $scope.oper = '编辑';
+      });
+      $scope.errorMsg = '';
+      $scope.$saferApply();
+    }); 
+
+    $scope.$on('addTag', function() {
+      var length = $scope.info.currentStaffs.length;
+      if($scope.selectedStaff) {
+        var selectedStaff = $scope.selectedStaff.split('/');
+        $scope.selectedStaff = {_id: Number(selectedStaff[0]), username: selectedStaff[1]};
+        $scope.info.currentStaffs[length] = $scope.selectedStaff;
+      }
+      $('#myModal').hide();
+      $scope.$saferApply();
+    });
+
+    $scope.$on('deleteTag', function(event,data) {
+      data = Number(data);
+      _.remove($scope.info.currentStaffs, function(staff) {
+        return staff._id == data;
+      });
+      $scope.$saferApply();
+    });
+    
+    $scope.$on('goInfoEdit', function() {
+      $scope.isEdit = true;
+      $scope.oper = '确认更新';
+      $scope.$saferApply();
+    });
+
+    $scope.$on('goUpdate', function(){
+      if(!$scope.info.name) {
+        $scope.errorMsg = '组名不能为空';
+        $scope.$saferApply();
+        return;
+      }
+      var updateGroup = {
+        group_id        : $stateParams.id,
+        name            : $scope.info.name,
+        isOpen          : $scope.info.isOpen || '',
+        currentLeader   : Number($scope.info.currentLeader._id) || '',
+        description     : $scope.info.description || ''
+      };
+      updateGroup.currentStaffs = _.pluck($scope.info.currentStaffs, '_id');
+      Groups.update(updateGroup).$promise.then(function(data) {
+        if (data.status !== 1) return $scope.errorMsg = data.msg;
+        Groups.one({ group_id: $stateParams.id }).$promise.then(function(data){
+          $scope.info = data.group;
+        });
+        $('#operationBtn').removeClass('btn-warning').addClass('btn-primary');
+        $scope.oper = '编辑';
+        $scope.isEdit = false;
+        alert(data.msg);
+      });
+      $scope.$saferApply();
     });
   }])
 
@@ -220,35 +321,166 @@ angular.module('cms.controllers', [])
   .controller('projectmanageCtrl', ['$scope', function($scope) {
 
   }])
+// 
+// == 项目信息
+  .controller('projectdetailCtrl', ['$scope', 'Projects', '$stateParams', function($scope, Projects, $stateParams) {
+    $scope.isEdit = false;
+    $scope.oper = '编辑';
+    $scope.id = $stateParams.id;
+    var proState = '';
+
+    Projects.one({ project_id: $stateParams.id }).$promise.then(function(data){
+      $scope.info = data.project;
+      proState = data.project.status;
+    });
+
+    $scope.$on('revokeEdit', function() {
+      $scope.isEdit = false;
+      Projects.one({ project_id: $stateParams.id }).$promise.then(function(data){
+        $scope.info = data.project;
+        $scope.oper = '编辑';
+      });
+      $scope.errorMsg = '';
+      $scope.$saferApply();
+    }); 
+    
+    $scope.$on('goInfoEdit', function() {
+      $scope.isEdit = true;
+      $scope.oper = '确认更新';
+      $scope.$saferApply();
+    });
+
+    $scope.$on('goUpdate', function(){
+      if(!$scope.info.name) {
+        $scope.errorMsg = '项目名不能为空';
+        $scope.$saferApply();
+        return;
+      }
+      var updateProject = {
+        project_id        : $stateParams.id,
+        name              : $scope.info.name,
+        description       : $scope.info.description || '',
+        group             : $scope.info.group._id
+      };
+      if(proState == '未分配' && $scope.info.group) updateProject.status == '已分配';
+      if(proState == '已分配' && !$scope.info.group) updateProject.status == '未分配';
+      Projects.update(updateProject).$promise.then(function(data) {
+        if (data.status !== 1) return $scope.errorMsg = data.msg;
+        Projects.one({ project_id: $stateParams.id }).$promise.then(function(data){
+          $scope.info = data.project;
+        });
+        $scope.oper = '编辑';
+        $scope.isEdit = false;
+        alert(data.msg);
+      });
+      $scope.$saferApply();
+    });
+  }])
+
+
+// 
+// == 用户信息
+  .controller('userdetailCtrl', ['$scope', 'Users', '$stateParams', function($scope, Users, $stateParams) {
+    $scope.isEdit = false;
+    $scope.oper = '编辑';
+
+    Users.one({ user_id: $stateParams.id }).$promise.then(function(data) {
+      $scope.info = data.data.user;
+    });
+
+    $scope.$on('revokeEdit', function() {
+      $scope.isEdit = false;
+      Users.one({ user_id: $stateParams.id }).$promise.then(function(data){
+        $scope.info = data.data.user;
+        $scope.oper = '编辑';
+      });
+      $scope.errorMsg = '';
+      $scope.$saferApply();
+    }); 
+    
+    $scope.$on('goInfoEdit', function() {
+      $scope.isEdit = true;
+      $scope.oper = '确认更新';
+      $scope.$saferApply();
+    });
+
+    $scope.$on('goUpdate', function(){
+      if(!$scope.info.username){
+        $scope.errorMsg = '姓名不能为空！';
+        $scope.$saferApply();
+        return;
+      }
+      if($scope.info.status == 'true' && !$scope.info.account){
+        $scope.errorMsg = '在职人员帐号不能为空！';
+        $scope.$saferApply();
+        return;
+      }
+      var user = {
+        user_id: $stateParams.id,
+        username: $scope.info.username,
+        account: $scope.info.account || '',
+        status: $scope.info.status,
+        role: $scope.info.role.number,
+        phone: $scope.info.phone || '',
+        birthday: $scope.info.birthday || '',
+        introduction: $scope.info.introduction || ''
+      };
+      Users.update(user).$promise.then(function(data) {
+        if (data.status == 1){
+          Users.one({ user_id: $stateParams.id }).$promise.then(function(data) {
+            $scope.info = data.data.user;
+          });
+          $scope.oper = '编辑';
+          $('#operationBtn').removeClass('btn-warning').addClass('btn-primary');
+          $scope.isEdit = false;
+          alert(data.msg);
+        }else {
+          $scope.errorMsg = data.msg;
+        }
+      });
+      $scope.$saferApply();
+    });
+  }])
 
 //
 //== 成员列表
-  .controller('userslistCtrl', ['$scope', 'Users', function($scope, Users) {
+  .controller('userslistCtrl', ['$scope', 'Users', 'Roles',  function($scope, Users, Roles) {
     Users.all().$promise.then(function(data) {
       $scope.users = data.data.users;
     });
+
+    $scope.changeQuery = function() {
+      if($scope.query) {
+        Roles.one({role_num: $scope.query}).$promise.then(function(data){
+          $scope.users = data.users;   
+        });
+      } else {
+        Users.all().$promise.then(function(data) {
+          $scope.users = data.data.users;
+        });
+      }
+    };
   }])
 
 //
 //== 新增成员
   .controller('usercreateCtrl', ['$scope', 'Groups', 'Users', function($scope, Groups, Users) {
     // 定义scope
-    $scope.roles = ['00000001','00000100','00100000','01000000'];
+    $scope.roles = ['00','01','10','11'];
     Groups.all().$promise.then(function(data) {
       if (data.status !== 1) return alert('发生错误!');
-      $scope.groups = data.data.groups;
+      $scope.groups = _.remove(data.data.groups, function(group){ return group.isOpen == 'true'});
+      $scope.selectedGroups = [$scope.groups[0]._id];
+      $scope.belongGroup = [$scope.groups[0]._id];
     });
 
-    $scope.selectedRoles = ['00000100'];
-    $scope.selectedGroups = [1];
+    $scope.role = '00';
 
     $scope.addUserMsg = '';
 
     // 方法
-    $scope.toggleselectedRoles = function(role) {
-      var idx = $scope.selectedRoles.indexOf(role);
-      if (idx > -1) { $scope.selectedRoles.splice(idx, 1); }
-      else { $scope.selectedRoles.push(role) }
+    $scope.togglebelongGroup = function(role) {
+      $scope.belongGroup = [role];
     };
 
     $scope.toggleselectedGroups = function(role) {
@@ -262,32 +494,33 @@ angular.module('cms.controllers', [])
       var user = {};
       user.account = $scope.useraccount;
       user.password = $scope.userpassword || '123';
-      user.jointime = $scope.userjointime;
-      user.group = $scope.selectedGroups;
-      user.role = $scope.selectedRoles;
+      user.birthday = $scope.userbirthday || '';
+      user.phone = $scope.userphone || '';
+      user.role = $scope.role;
+      if(user.role == '10') user.currentGroup = $scope.selectedGroups || [];
+      if(user.role == '01') user.currentGroup = $scope.belongGroup || [];
+      user.username = $scope.username || '佚名';
 
       if (!user.account) {
-        $scope.addUserMsg = '登录账号不能为空';
+        $scope.addUserMsg = '登录账号不能为空!';
         $scope.$saferApply();
         return;
       }
-      if ($scope.selectedRoles.length === 0) {
-        $scope.addUserMsg = '请选择成员担任角色';
-        $scope.$saferApply();
-        return;
-      }
-      if ($scope.selectedGroups.length === 0) {
-        $scope.addUserMsg = '请选择成员所在小组';
+      if (!$scope.role) {
+        $scope.addUserMsg = '请选择成员担任角色!';
         $scope.$saferApply();
         return;
       }
       Users.save(user).$promise.then(function(data) {
         if (data.status !== 1) $scope.addUserMsg = data.msg;
-        $scope.useraccount = "";
-        $scope.userpassword = "";
-        $scope.userjointime = "";
-        $scope.selectedGroups = [1];
-        $scope.selectedRoles = ['00000100'];
+        $scope.useraccount = '';
+        $scope.userpassword = '';
+        $scope.userbirthday = '';
+        $scope.userphone = '';
+        $scope.username = '';
+        $scope.selectedGroups = [$scope.groups[0]._id];
+        $scope.belongGroup = [$scope.groups[0]._id];
+        $scope.role = '00';
         $scope.addUserMsg = data.msg;
       });
     });
@@ -306,8 +539,8 @@ angular.module('cms.controllers', [])
     var userid = $cookies['_id'];
 
     $scope.normal = true;
-
-    Users.one({ users_id: userid }).$promise.then(function(data) {
+    
+    Users.one({ user_id: userid }).$promise.then(function(data) {
       $scope.info = data.data.user;
     });
 
@@ -319,14 +552,74 @@ angular.module('cms.controllers', [])
     // 取消编辑
     $scope.$on('revokeEdit', function() {
       $scope.normal = true;
-      Users.one({ users_id: userid }).$promise.then(function(data) {
+      $scope.addUserMsg = '';
+      Users.one({ user_id: userid }).$promise.then(function(data) {
         $scope.info = data.data.user;
-        $scope.$saferApply();
       });
+      $scope.$saferApply();
     });
     // 更新编辑
     $scope.$on('updateEdit', function() {
-      alert('yes');
+      if(!$scope.info.username || $scope.info.username == ''){
+        $scope.addUserMsg = '姓名不能为空';
+        $scope.$saferApply();
+        return;
+      }else{
+        var user = {
+          user_id: $scope.info.id,
+          username: $scope.info.username,
+          phone: $scope.info.phone || '',
+          birthday: $scope.info.birthday || '',
+          introduction: $scope.info.introduction || ''
+        };
+        Users.update(user).$promise.then(function(data) {
+          if (data.status == 1){
+            location.reload() 
+          }else {
+            $scope.addUserMsg = data.msg;
+          }
+        });
+      }
+    });
+  }])
+
+// 
+// == 公告
+  .controller('broadcastcreateCtrl', ['$scope', '$cookies', 'Broadcasts', function($scope, $cookies, Broadcasts) {
+    $scope.description = '';
+    $scope.$on('submitBroadcast', function() {
+      if(!$scope.description) {
+        alert('发布的内容不能为空！');
+        return;
+      }
+      var userid = $cookies['_id'],
+          condition = {
+            description: $scope.description,
+            creator: userid
+          };
+      Broadcasts.save(condition).$promise.then(function(data){
+        alert(data.msg);
+        if(data.status == 1) {
+          $scope.description = '';
+        }
+      });
+    });
+  }])
+
+  .controller('broadcastlistCtrl', ['$scope', 'Broadcasts', function($scope, Broadcasts) {
+    Broadcasts.all().$promise.then(function(data) {
+      $scope.info = data.broadcasts;
+    });
+    $scope.$on('deleteDoc', function(event, data) {
+      var condition = {broadcast_id: data};
+      Broadcasts.delete(condition).$promise.then(function(data){
+        alert(data.msg);
+        if(data.status == 1) {
+          Broadcasts.all().$promise.then(function(data) {
+            $scope.info = data.broadcasts;
+          });
+        }
+      });
     });
   }])
 

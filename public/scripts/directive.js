@@ -1,4 +1,4 @@
-angular.module('ptcms.directives', [])
+angular.module('cms.directives', [])
 
 //
 //== 通用
@@ -214,8 +214,96 @@ angular.module('ptcms.directives', [])
       });
     };
     return { restrict: 'AE', link: link };
-  }]);
+  }])
 
+// 管理员编辑
+  .directive('deleteDoc', [function() {
+    'use strict';
+    var link = function(scope, element, attrs) {
+      element.on('click', function(e) {
+        if(confirm('确定删除？')) {
+          var data = $(this).attr('data');
+          scope.$emit('deleteDoc', data);
+        }
+      });
+    };
+    return { restrict: 'AE', link: link };
+  }])
+  .directive('submitBroadcast', [function() {
+    'use strict';
+    var link = function(scope, element, attrs) {
+      element.on('click', function(e) {
+        if(confirm('确定发布？')){
+          scope.$emit('submitBroadcast');         
+        }
+      });
+    };
+    return { restrict: 'AE', link: link };
+  }])
+  .directive('closeModal', [function() {
+    'use strict';
+    var link = function(scope, element, attrs) {
+      element.on('click', function(e) {
+        $('#myModal').hide();
+      });
+    };
+    return { restrict: 'AE', link: link };
+  }])
+  .directive('showModal', [function() {
+    'use strict';
+    var link = function(scope, element, attrs) {
+      element.on('click', function(e) {
+        $('#myModal').show();
+        scope.$emit('showModal');
+      });
+    };
+    return { restrict: 'AE', link: link };
+  }])
+  .directive('addTag', [function() {
+    'use strict';
+    var link = function(scope, element, attrs) {
+      element.on('click', function(e) {
+        scope.$emit('addTag');
+      });
+    };
+    return { restrict: 'AE', link: link };
+  }])
+  .directive('deleteTag', [function() {
+    'use strict';
+    var link = function(scope, element, attrs) {
+      element.on('click', function(e) {
+        var data = $(this).attr('data');
+        scope.$emit('deleteTag', data);
+      });
+    };
+    return { restrict: 'AE', link: link };
+  }])
+  .directive('adminRevok', [function() {
+    'use strict';
+    var link = function(scope, element, attrs) {
+      element.on('click', function(e) {
+        $('#operationBtn').removeClass('btn-warning').addClass('btn-primary');
+        scope.$emit('revokeEdit');
+      });
+    };
+    return { restrict: 'AE', link: link };
+  }])
+  .directive('adminEdit', [function() {
+    'use strict';
+    var link = function(scope, element, attrs) {
+      element.on('click', function(e) {
+        var oper = scope.oper;
+        if(oper == '编辑') {
+          $(this).removeClass('btn-primary').addClass('btn-warning');
+          scope.$emit('goInfoEdit');
+        }else {
+          scope.$emit('goUpdate');
+        }
+
+      });
+    };
+    return { restrict: 'AE', link: link };
+  }]);
 
 
 

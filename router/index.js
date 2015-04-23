@@ -77,24 +77,14 @@ router.get('/users', action.users.all);
 // 添加
 router.post('/users', action.users.add);
 
-
-//============== 班级
-router.param('classe_id', function(req, res, next, id) {
-  req._id = id;
+// ============== 角色
+router.param('role_num', function(req, res, next, role) {
+  req.role = role;
   next();
 });
-
-router.route('/classes/:classe_id')
-  .get(action.classes.one)
-  .put(action.classes.update)
-  .delete(action.classes.del);
-
-// 添加
-router.post('/classes', action.classes.add);
-
-// 查找所有
-router.get('/classes', action.classes.all);
-
+// 获得特定职位的人
+router.route('/roles/:role_num')
+  .get(action.users.getRole);
 
 //============== 小组
 router.param('groups_id', function(req, res, next, id) {
@@ -113,7 +103,53 @@ router.get('/groups', action.groups.all);
 // 添加
 router.post('/groups', action.groups.add);
 
+//============== 项目
+router.param('projects_id', function(req, res, next, id) {
+  req._id = id;
+  next();
+});
 
+router.route('/projects/:projects_id')
+  .get(action.projects.one)
+  .put(action.projects.update)
+  .delete(action.projects.del);
+
+// 查找所有
+router.get('/projects', action.projects.all);
+
+// 添加
+router.post('/projects', action.projects.add);
+
+//============== 反馈
+router.param('feedbacks_id', function(req, res, next, id) {
+  req._id = id;
+  next();
+});
+
+router.route('/feedbacks/:feedbacks_id')
+  .get(action.feedbacks.one)
+  .delete(action.feedbacks.del);
+
+// 查找所有
+router.get('/feedbacks', action.feedbacks.all);
+
+// 添加
+router.post('/feedbacks', action.feedbacks.add);
+
+//============== 公告
+router.param('broadcasts_id', function(req, res, next, id) {
+  req._id = id;
+  next();
+});
+
+router.route('/broadcasts/:broadcasts_id')
+  .delete(action.broadcasts.del);
+
+// 查找所有
+router.get('/broadcasts', action.broadcasts.all);
+
+// 添加
+router.post('/broadcasts', action.broadcasts.add);
 //
 //== 暴露路由
 module.exports = router;

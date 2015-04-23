@@ -1,11 +1,13 @@
 //
 //== 控制器模块
 
-var classeCtrl    = require('./classe');
 var loginCtrl     = require('./login');
 var signupCtrl    = require('./signup');
 var userCtrl      = require('./user');
 var groupCtrl     = require('./group');
+var projectCtrl   = require('./project');
+var feedbackCtrl  = require('./feedback');
+var broadcastCtrl = require('./broadcast');
 
 
 //
@@ -38,6 +40,8 @@ module.exports = {
   signup: signupCtrl,
   logout: goLogin,
   users: userCtrl,
-  classes: classeCtrl,
-  groups: groupCtrl
+  groups: groupCtrl,
+  projects: projectCtrl,
+  feedbacks: feedbackCtrl,
+  broadcasts: broadcastCtrl
 };

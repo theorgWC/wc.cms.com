@@ -26,9 +26,8 @@ var userSchema = mongoose.Schema({
   historyTask     : [{ type: Number, ref: 'Task' }],
   currentGroup    : [{ type: Number, ref: 'Group' }],
   historyGroup    : [{ type: Number, ref: 'Group' }],
-  currentProject  : [{ type: Number, ref: 'Project' }],
-  historyProject  : [{ type: Number, ref: 'Project' }],
-  status          : { type: Boolean, default: true },//false(离职)，true（在职）
+  projects        : [{ type: Number, ref: 'Project' }],
+  status          : { type: String, default: 'true' },//false(离职)，true（在职）
   resume          : { type: Number, ref: 'Resume' },
   introduction    : String,
   feedbacks       : [{ type: Number, ref: 'Feedback' }]

@@ -11,7 +11,7 @@ var groupSchema = new Schema({
   description     : String,
   name            : { type: String,  required: true },
   createTime      : { type: String,  default: Date.now() },
-  isOpen          : { type: Boolean, default: true },//废弃或存在
+  isOpen          : { type: String, default: 'true' },//废弃或存在
   currentLeader   : { type: Number,  ref: 'User' },
   historyLeaders  : [{ type: Number, ref: 'User' }],
   currentStaffs   : [{ type: Number, ref: 'User' }],

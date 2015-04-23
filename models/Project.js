@@ -11,7 +11,7 @@ var projectSchema = new Schema({
   description     : String,
   endTime         : String,
   name            : { type: String,  required: true },
-  beginTime       : { type: String,  default: Date.now() },
+  beginTime       : String,
   createTime      : { type: String,  default: Date.now() },
   status          : { type: String,  default: '待分配' },//待分配、已分配、启动、暂停、完成
   creator         : { type: Number,  ref: 'User' },

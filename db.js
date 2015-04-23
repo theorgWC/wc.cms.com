@@ -3,8 +3,7 @@
 var mongoose      = require('mongoose');
 
 var Sequence      = require('./models/Sequence');
-// var Classe        = require('./models/Classe');
-// var Grade         = require('./models/Grade');
+var Project       = require('./models/Project');
 var Group         = require('./models/Group');
 var User          = require('./models/User');
 
@@ -44,6 +43,8 @@ var buildAdmin = function() {
       _id: seq,
       account: 'admin@wc.com',
       username: 'administrator',
+      phone: '18825188442',
+      birthday: '1993-01-01',
       role: '00',
       introduction: 'administrator has the top privilege'
     });
@@ -59,6 +60,9 @@ var buildLeader = function() {
       _id: seq,
       account: 'leader@wc.com',
       username: 'group leader',
+      phone: '18825188442',
+      birthday: '1993-01-01',
+      currentGroup: [1,3],
       role: '01',
       introduction: 'group leader is responsible for his group'
     });
@@ -74,6 +78,8 @@ var buildMember = function() {
       _id: seq,
       account: 'member@wc.com',
       username: 'member',
+      currentGroup: [1,3],
+      projects: [1],
       role: '10',
       introduction: 'member is the general member in the team'
     });
@@ -114,16 +120,33 @@ var buildProposor = function() {
 //
 //== 生成小组
 var buildGroup = function() {
-  new Group({_id: 1, name: '前端组'}).save();
-  new Group({_id: 2, name: '安卓组'}).save();
-  new Group({_id: 3, name: '游戏组'}).save();
-  new Group({_id: 4, name: '动画组'}).save();
+  new Group({_id: 1, name: 'IOS组', currentLeader: '2', currentStaffs: [3,2], projects: [1], description: 'this is the group responsible for IOS'}).save();
+  new Group({_id: 2, name: '安卓组', currentLeader: '3', currentStaffs: [3,2]}).save();
+  new Group({_id: 3, name: '游戏组', currentLeader: '3', currentStaffs: [3,2]}).save();
+  new Group({_id: 4, name: '动画组', currentLeader: '3', currentStaffs: [3,2]}).save();
   builder.setCurrentSequence('groups', 4, function(err){
     if(err) {
-      console.log('build error whild build group')
+      console.error('build error whild build group');
     } else {
-      console.log('generate four groups');
+      console.log('###### generate four groups');
     }
+  });
+};
+
+// 
+// == 生成项目
+var buildProject = function() {
+  builder.getNextSequence('projects', function(seq) {
+    var admin = new Project({
+      _id: seq,
+      name: '移动构建项目',
+      description: '移动端需要重构',
+      group: 1,
+      status: '启动'
+    });
+    admin.save(function() {
+      console.log('###### generate the new Project');
+    });
   });
 };
 
@@ -149,6 +172,7 @@ var init = function() {
   db.collections.sequences.drop(),
   db.collections.users.drop(),
   db.collections.groups.drop();
+  db.collections.projects.drop();
   // 生成递增序列
   buildSequences();
   // 生成成员
@@ -158,6 +182,8 @@ var init = function() {
   buildProposor();
   // 生成组
   buildGroup();
+  // 生成项目
+  buildProject();
 };
 
 

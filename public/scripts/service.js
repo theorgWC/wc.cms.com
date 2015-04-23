@@ -1,4 +1,4 @@
-angular.module('ptcms.services', [])
+angular.module('cms.services', [])
 
 //
 //== 用户
@@ -22,12 +22,46 @@ angular.module('ptcms.services', [])
     var Grades = $resource('/grades', null, {
       'all':    { method: 'GET',    url: '/grades' },
       'save':   { method: 'POST',   url: '/grades' },
-      'one':    { method: 'GET',    url: '/grades/:grade_id', params: { grade_id: '@grade_id' } },
-      'update': { method: 'PUT',    url: '/grades/:grade_id', params: { grade_id: '@grade_id' } },
       'delete': { method: 'DELETE', url: '/grades/:grade_id', params: { grade_id: '@grade_id' } },
     });
     return Grades;
   }])
+
+// == 角色
+  .factory('Roles', ['$resource', function($resource) {
+    'use strict';
+    var Roles = $resource('/roles', null, {
+      'one':    { method: 'GET',    url: '/roles/:role_num', params: { role_num: '@role_num' } }
+    });
+    return Roles;
+  }])
+
+//
+//== 反馈
+  .factory('Feedbacks', ['$resource', function($resource) {
+    'use strict';
+    var Feedbacks = $resource('/feedbacks', null, {
+      'all':    { method: 'GET',    url: '/feedbacks' },
+      'save':   { method: 'POST',   url: '/feedbacks' },
+      'one':    { method: 'GET',    url: '/feedbacks/:feedback_id', params: { feedback_id: '@feedback_id' } },
+      'delete': { method: 'DELETE', url: '/feedbacks/:feedback_id', params: { feedback_id: '@feedback_id' } },
+    });
+    return Feedbacks;
+  }])
+
+//
+//== 公告
+  .factory('Broadcasts', ['$resource', function($resource) {
+    'use strict';
+    var Broadcasts = $resource('/broadcasts', null, {
+      'all':    { method: 'GET',    url: '/broadcasts' },
+      'save':   { method: 'POST',   url: '/broadcasts' },
+      'one':    { method: 'GET',    url: '/broadcasts/:broadcast_id', params: { broadcast_id: '@broadcast_id' } },
+      'delete': { method: 'DELETE', url: '/broadcasts/:broadcast_id', params: { broadcast_id: '@broadcast_id' } },
+    });
+    return Broadcasts;
+  }])
+
 
 //
 //== 小组
@@ -44,15 +78,15 @@ angular.module('ptcms.services', [])
   }])
 
 //
-//== 班级
-  .factory('Classes', ['$resource', function($resource) {
+//== 项目
+  .factory('Projects', ['$resource', function($resource) {
     'use strict';
-    var Classes = $resource('/classes', null, {
-      'all':    { method: 'GET',    url: '/classes' },
-      'save':   { method: 'POST',   url: '/classes' },
-      'one':    { method: 'GET',    url: '/classes/:classe_id', params: { classe_id: '@classe_id' } },
-      'update': { method: 'PUT',    url: '/classes/:classe_id', params: { classe_id: '@classe_id' } },
-      'delete': { method: 'DELETE', url: '/classes/:classe_id', params: { classe_id: '@classe_id' } },
+    var Projects = $resource('/projects', null, {
+      'all':    { method: 'GET',    url: '/projects' },
+      'save':   { method: 'POST',   url: '/projects' },
+      'one':    { method: 'GET',    url: '/projects/:project_id', params: { project_id: '@project_id' } },
+      'update': { method: 'PUT',    url: '/projects/:project_id', params: { project_id: '@project_id' } },
+      'delete': { method: 'DELETE', url: '/projects/:project_id', params: { project_id: '@project_id' } },
     });
-    return Classes;
+    return Projects;
   }]);

@@ -16,8 +16,8 @@
         <li on-toggle="toggled(open)" class="dropdown user">
           <a href class="dropdown-toggle">
             <img src="/imgs/avatar1_small.jpg">
-              <span>&nbsp;&nbsp;{{user.username}}&nbsp;</span>
-              <i class="fa fa-angle-down"></i>
+            <span ng-bind="user.username"></span>
+            <i class="fa fa-angle-down"></i>
           </a>
           <ul class="dropdown-menu">
             <li><a href="#" ui-sref="myprofile"><i class="fa fa-user"></i>个人信息</a></li>
@@ -30,12 +30,12 @@
     </div>
     <!-- 主体 -->
     <div class="page-container">
-      <a id="menu-toggler" on-toggle="toggled(open)" target="_blank" href class="menu-toggler"><span class="menu-text"></span></a>
+      <a id="menu-toggler" target="_blank" class="menu-toggler" ng-click="showMenu()"><span class="menu-text"></span></a>
       <!-- 菜单栏 -->
       <div ng-controller="sidebarCtrl" class="page-sidebar">
         <ul class="menus">
           <li class="a-level active">
-            <a ui-sref="feedback">
+            <a href="index" target="_self">
               <i class="fa fa-home"></i>
               <span>首页</span>
             </a>
@@ -93,25 +93,16 @@
               <li><i class="fa fa-home"></i> 首页</li>
             </ul>
           </div>
-          <div class="dashboard row">
-            <div class="col-md-8 col-xs-10 col-xs-offset-1 col-md-offset-2">
-              <h2 class="welcome">欢迎{{user.username}}登录企业内部后台管理系统</h2>
-            </div>
-            <div class="col-md-8 col-xs-10 col-xs-offset-1 col-md-offset-2">
-              <div class="tips">
-                <div class="header"><i class="fa fa-bell-o"></i><span>小小提示</span></div>
-                <div class="content">
-                  <ul>
-                    <li>请保证每日至少登录一次，已查看最新任务和通知</li>
-                    <li>各位成员请及时跟进小组长安排下来的任务并及时反馈</li>
-                  </ul>
-                </div>
-              </div>
+          <div class="dashboard row main-content">
+            <h2 class="welcome text-center">欢迎<span ng-bind="user.username"></span>登录后台管理系统</h2>
+            <div class="col-md-8 col-xs-12 col-md-offset-2">
               <div class="announcement">
-                <div class="header"><i class="fa fa-flag-o"></i><span>最新公告</span></div>
+                <div class="header"><i class="fa fa-flag-o"></i><span>最新公告</span><a class='pull-right' ui-sref="broadcastlist">更多<<</a></div>
                 <div class="content">
-                  <p>六月初，我们团队将开始本学年的团队招新，请各位成员开始准备招新工作</p>
-                  <p>总组长和各位小组长需要准备演讲资料</p>
+                  <p ng-repeat="broadcast in broadcasts" class="row">
+                    <span ng-bind="broadcast.description" class="col-xs-8 col-md-10"></span>
+                    <span class="col-xs-4 col-md-2 date" ng-bind="broadcast.createTime | date"></span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -119,13 +110,14 @@
         </div>
       </div>
     </div>
-    <div class="page-footer">
-      <div class="copyright"><span class="content">2015 © Designed and built by Wang && Chen.</span></div>
+    <div class="page-footer text-center">
+      <span class="content">2015 © Designed and built by Wang && Chen.</span>
     </div>
     <div class="page-info">
-      <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+      <alert ng-repeat="alert in alerts" close="closeAlert($index,alert._id)" ng-bind="alert.description"></alert>
     </div>
     <script src="/vendor/jquery/jquery-1.11.0.min.js"></script>
+    <script src="/vendor/lodash.js"></script>
     <script src="/vendor/angular/angular.js"></script>
     <script src="/vendor/angular-cookies/angular-cookies.js"></script>
     <script src="/vendor/angular-resource/angular-resource.js"></script>
